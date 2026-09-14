@@ -1,4 +1,4 @@
-# 📱 Daily Habits — App de Hábitos Diários
+# 📱 Daily Habits - App de Hábitos Diários
 
 > Aplicativo mobile desenvolvido com **React Native + Expo** como projeto de estudos. Acompanhe e construa hábitos diários, com streak, histórico e persistência local.
 
@@ -15,7 +15,7 @@
 - [ ] Contador de **streak** (dias seguidos cumpridos)
 - [ ] Lista de hábitos do dia (Home)
 - [ ] Tela de detalhes do hábito (histórico, edição, exclusão)
-- [ ] Persistência local (AsyncStorage) — dados não somem ao fechar o app
+- [ ] Persistência local (AsyncStorage) para salvar hábitos e completions, evitando que os dados não somem ao fechar o app
 - [ ] Tela de estatísticas (resumo semanal/mensal)
 
 ---
@@ -109,10 +109,9 @@ npx expo start --clear
 - **Funções puras para datas**: Evita dependência de `Date.now()` global, facilitando testes.
 - **Normalização**: `Habit` e `HabitCompletion` são entidades separadas (mesmo conceito de tabelas SQL).
 - **Streak derivado, não salvo**: O streak é calculado das completions em tempo real. Nunca duplicamos informação.
-- **.gitignore configurado**: Pastas `.trae/` e `.claude/` são ignoradas em repositórios públicos.
 
 ---
 
 ## 📜 Licença
 
-Projeto de estudos — uso livre.
+Projeto de estudos para uso livre.
