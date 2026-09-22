@@ -16,8 +16,9 @@ export interface Habit {
     createdAt: string;
 }
 
-export interface HabitCompletation {
+export interface HabitCompletion {
     habitId: string;
+    date: string;
     completedAt: string;
 }
 

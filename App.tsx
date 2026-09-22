@@ -4,14 +4,17 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import RootNavigator from './src/navigation/RootNavigator';
 import MainTabs from './src/navigation/MainTabs';
+import { HabitProvider } from './src/context/HabitContext';
 
 export default function App() {
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
-        <RootNavigator />
-        <StatusBar style="light" />
-      </NavigationContainer>
+      <HabitProvider>
+        <NavigationContainer>
+          <RootNavigator />
+          <StatusBar style="light" />
+        </NavigationContainer>
+      </HabitProvider>
     </SafeAreaProvider>
   );
 }
