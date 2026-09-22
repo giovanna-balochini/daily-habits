@@ -40,6 +40,8 @@ yarn-error.*
 /ios
 /android
 
-# AI / IDE specific folders
+# IDE specific files and folders
 .trae/
 .claude/
+CLAUDE.md
+AGENTS.md
