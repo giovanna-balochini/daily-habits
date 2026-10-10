@@ -1,4 +1,4 @@
-import { TouchableOpacity, Text } from 'react-native';
+import { TouchableOpacity, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
@@ -30,7 +30,7 @@ export default function MainTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarActiveTintColor: '#4d50f0ff',
+        tabBarActiveTintColor: '#6366F1',
         tabBarInactiveTintColor: '#94a3b8',
         tabBarStyle: {
           height: 60,
@@ -39,7 +39,7 @@ export default function MainTabs() {
           fontSize: 12,
         },
         headerStyle: {
-          backgroundColor: '#4d50f0ff',
+          backgroundColor: '#6366F1',
         },
         headerTintColor: '#fff',
         headerTitleStyle: {
@@ -63,10 +63,34 @@ export default function MainTabs() {
         component={HomeScreen}
         options={{
           title: 'Hoje',
-          headerTitle: 'Meus Hábitos',
+          headerTitle: () => (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 8,
+              }}
+            >
+              <Text style={{ fontSize: 22 }}>✨</Text>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: '700',
+                  color: '#fff',
+                }}
+              >
+                Meus Hábitos
+              </Text>
+            </View>
+          ),
+          headerStyle: {
+            backgroundColor: '#6366F1',
+          },
+          headerTintColor: '#fff',
           headerRight: () => <NewHabitButton />,
         }}
       />
+
       <Tab.Screen
         name="Stats"
         component={StatsScreen}
