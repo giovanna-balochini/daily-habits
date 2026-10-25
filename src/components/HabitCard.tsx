@@ -1,7 +1,15 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { HabitWithStats } from '../types/habit';
+import {
+  colors,
+  fontSize,
+  fontWeight,
+  radius,
+  shadows,
+  spacing,
+} from '../utils/theme';
 
 interface HabitCardProps {
   habit: HabitWithStats;
@@ -10,69 +18,73 @@ interface HabitCardProps {
 }
 
 export default function HabitCard({ habit, onToggle, onPress }: HabitCardProps) {
+  const { isCompletedToday } = habit;
+
   return (
     <TouchableOpacity
       style={styles.card}
       onPress={() => onPress(habit.id)}
-      activeOpacity={0.7}
+      activeOpacity={0.75}
+      accessibilityRole="button"
+      accessibilityLabel={`${habit.name}, ${habit.currentStreak} dias de sequência`}
     >
       <View
         style={[
-          styles.iconCircle,
+          styles.iconContainer,
           {
-            backgroundColor: `${habit.color}15`,
-            borderColor: `${habit.color}50`,
+            backgroundColor: `${habit.color}14`,
+            borderColor: `${habit.color}33`,
           },
+          isCompletedToday && styles.iconContainerCompleted,
         ]}
       >
         <Text style={styles.iconEmoji}>{habit.icon}</Text>
       </View>
 
-      <View style={styles.contentWrapper}>
-        <View style={styles.titleRow}>
-          <Text
-            style={[
-              styles.habitName,
-              habit.isCompletedToday && styles.habitNameCompleted,
-            ]}
-            numberOfLines={2}
-          >
-            {habit.name}
-          </Text>
-          <TouchableOpacity
-            style={[
-              styles.checkbox,
-              habit.isCompletedToday && {
-                backgroundColor: habit.color,
-                borderColor: habit.color,
-              },
-            ]}
-            onPress={() => onToggle(habit.id)}
-            activeOpacity={0.7}
-            hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
-          >
-            {habit.isCompletedToday && (
-              <Ionicons name="checkmark" size={16} color="#fff" />
-            )}
-          </TouchableOpacity>
-        </View>
+      <View style={styles.content}>
+        <Text
+          style={[styles.name, isCompletedToday && styles.nameCompleted]}
+          numberOfLines={2}
+        >
+          {habit.name}
+        </Text>
 
         <View style={styles.metaRow}>
-          <View style={styles.streakBadge}>
-            <Ionicons name="flame" size={12} color="#F97316" />
-            <Text style={styles.streakText}>
-              {habit.currentStreak} {habit.currentStreak === 1 ? 'dia' : 'dias'}
-            </Text>
-          </View>
+          <Ionicons name="flame" size={13} color={colors.streak} />
+          <Text style={styles.metaText}>
+            {habit.currentStreak} {habit.currentStreak === 1 ? 'dia' : 'dias'}
+          </Text>
 
-          <View style={styles.totalBadge}>
-            <Ionicons name="checkmark-circle-outline" size={12} color="#64748B" />
-            <Text style={styles.totalText}>
-              {habit.totalCompletions}x
-            </Text>
-          </View>
+          <View style={styles.metaDot} />
+
+          <Ionicons
+            name="checkmark-circle"
+            size={13}
+            color={colors.textMuted}
+          />
+          <Text style={styles.metaText}>{habit.totalCompletions}</Text>
         </View>
       </View>
+
+      <TouchableOpacity
+        style={[
+          styles.check,
+          isCompletedToday && {
+            backgroundColor: habit.color,
+            borderColor: habit.color,
+          },
+        ]}
+        onPress={() => onToggle(habit.id)}
+        activeOpacity={0.7}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked: isCompletedToday }}
+        accessibilityLabel={`Concluir ${habit.name} hoje`}
+      >
+        {isCompletedToday && (
+          <Ionicons name="checkmark" size={15} color={colors.textInverse} />
+        )}
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 }
@@ -81,85 +93,66 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#172033',
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 2,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.border,
+    padding: spacing.lg,
+    gap: spacing.md,
+    ...shadows.subtle,
   },
-  iconCircle: {
-    width: 52,
-    height: 52,
-    borderRadius: 999,
-    borderWidth: 1.5,
-    justifyContent: 'center',
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: radius.md,
+    borderWidth: 1,
     alignItems: 'center',
-    marginRight: 12,
+    justifyContent: 'center',
+  },
+  iconContainerCompleted: {
+    opacity: 0.55,
   },
   iconEmoji: {
-    fontSize: 26,
+    fontSize: 22,
   },
-  contentWrapper: {
+  content: {
     flex: 1,
+    gap: 5,
   },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 6,
+  name: {
+    fontSize: fontSize.title,
+    fontWeight: fontWeight.semibold,
+    color: colors.textPrimary,
+    letterSpacing: -0.2,
   },
-  habitName: {
-    flex: 1,
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#172033',
-    marginRight: 12,
-  },
-  habitNameCompleted: {
-    textDecorationLine: 'line-through',
-    color: '#94A3B8',
-  },
-  checkbox: {
-    width: 26,
-    height: 26,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: '#CBD5E1',
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
+  nameCompleted: {
+    color: colors.textMuted,
   },
   metaRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: spacing.xs,
   },
-  streakBadge: {
-    flexDirection: 'row',
+  metaText: {
+    fontSize: fontSize.caption,
+    fontWeight: fontWeight.medium,
+    color: colors.textSecondary,
+  },
+  metaDot: {
+    width: 3,
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: colors.borderStrong,
+    marginHorizontal: spacing.xs,
+  },
+  check: {
+    width: 28,
+    height: 28,
+    borderRadius: radius.pill,
+    borderWidth: 1.5,
+    borderColor: colors.borderStrong,
+    backgroundColor: colors.surface,
     alignItems: 'center',
-    gap: 4,
-    backgroundColor: '#FFF7ED',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 999,
-  },
-  streakText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#C2410C',
-  },
-  totalBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  totalText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#64748B',
+    justifyContent: 'center',
   },
 });

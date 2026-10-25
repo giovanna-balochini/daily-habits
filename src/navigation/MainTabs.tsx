@@ -1,27 +1,45 @@
-import { TouchableOpacity, Text, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../types/navigation';
 import React from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList, MainTabsParamList } from '../types/navigation';
 import HomeScreen from '../screens/HomeScreen';
 import StatsScreen from '../screens/StatsScreen';
-import { MainTabsParamList } from '../types/navigation';
+import { colors, fontSize, fontWeight, radius, spacing } from '../utils/theme';
 
 const Tab = createBottomTabNavigator<MainTabsParamList>();
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, keyof RootStackParamList>;
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+function HomeHeaderTitle() {
+  return (
+    <View style={styles.headerTitle}>
+      <Image
+        source={require('../../assets/logo.png')}
+        style={styles.headerLogo}
+        resizeMode="contain"
+      />
+      <Text style={styles.headerTitleText}>Meus Hábitos</Text>
+    </View>
+  );
+}
 
 function NewHabitButton() {
   const navigation = useNavigation<NavigationProp>();
+
   return (
     <TouchableOpacity
+      style={styles.headerButton}
       onPress={() => navigation.navigate('NewHabit')}
-      style={{ marginRight: 16, flexDirection: 'row', alignItems: 'center' }}
+      activeOpacity={0.8}
+      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+      accessibilityRole="button"
+      accessibilityLabel="Criar novo hábito"
     >
-      <Ionicons name="add" size={22} color="#fff" />
-      <Text style={{ color: '#fff', marginLeft: 4, fontWeight: '600' }}>Novo</Text>
+      <Ionicons name="add" size={16} color={colors.textInverse} />
+      <Text style={styles.headerButtonText}>Novo</Text>
     </TouchableOpacity>
   );
 }
@@ -29,65 +47,34 @@ function NewHabitButton() {
 export default function MainTabs() {
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarActiveTintColor: '#6366F1',
-        tabBarInactiveTintColor: '#94a3b8',
-        tabBarStyle: {
-          height: 60,
-        },
-        tabBarLabelStyle: {
-          fontSize: 12,
-        },
+      screenOptions={{
         headerStyle: {
-          backgroundColor: '#6366F1',
+          backgroundColor: colors.surface,
         },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: '600',
-        },
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName: keyof typeof Ionicons.glyphMap;
-
-          if (route.name === 'Home') {
-            iconName = focused ? 'home' : 'home-outline';
-          } else {
-            iconName = focused ? 'bar-chart' : 'bar-chart-outline';
-          }
-
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-      })}
+        headerTintColor: colors.textPrimary,
+        headerShadowVisible: false,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textMuted,
+        tabBarStyle: styles.tabBar,
+        tabBarLabelStyle: styles.tabBarLabel,
+        tabBarItemStyle: styles.tabBarItem,
+      }}
     >
       <Tab.Screen
         name="Home"
         component={HomeScreen}
         options={{
           title: 'Hoje',
-          headerTitle: () => (
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 8,
-              }}
-            >
-              <Text style={{ fontSize: 22 }}>✨</Text>
-              <Text
-                style={{
-                  fontSize: 20,
-                  fontWeight: '700',
-                  color: '#fff',
-                }}
-              >
-                Meus Hábitos
-              </Text>
-            </View>
-          ),
-          headerStyle: {
-            backgroundColor: '#6366F1',
-          },
-          headerTintColor: '#fff',
+          headerTitle: () => <HomeHeaderTitle />,
+          headerTitleAlign: 'left',
           headerRight: () => <NewHabitButton />,
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons
+              name={focused ? 'home' : 'home-outline'}
+              size={size}
+              color={color}
+            />
+          ),
         }}
       />
 
@@ -96,8 +83,61 @@ export default function MainTabs() {
         component={StatsScreen}
         options={{
           title: 'Estatísticas',
+          headerTitle: 'Estatísticas',
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons
+              name={focused ? 'stats-chart' : 'stats-chart-outline'}
+              size={size}
+              color={color}
+            />
+          ),
         }}
       />
     </Tab.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  headerTitle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  headerLogo: {
+    width: 34,
+    height: 34,
+  },
+  headerTitleText: {
+    fontSize: fontSize.title,
+    fontWeight: fontWeight.bold,
+    color: colors.textPrimary,
+    letterSpacing: -0.3,
+  },
+  headerButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: colors.primary,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+    borderRadius: radius.pill,
+    marginRight: spacing.lg,
+  },
+  headerButtonText: {
+    color: colors.textInverse,
+    fontSize: fontSize.body,
+    fontWeight: fontWeight.semibold,
+  },
+  tabBar: {
+    backgroundColor: colors.surface,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.border,
+  },
+  tabBarLabel: {
+    fontSize: fontSize.caption,
+    fontWeight: fontWeight.semibold,
+  },
+  tabBarItem: {
+    paddingVertical: spacing.xs,
+  },
+});
