@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Easing, StyleSheet, View } from 'react-native';
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -26,6 +26,8 @@ function AppContent() {
   const { isLoading } = useHabits();
   const [minDurationElapsed, setMinDurationElapsed] = useState(false);
   const [splashVisible, setSplashVisible] = useState(true);
+  const splashOpacity = useRef(new Animated.Value(1)).current;
+  const appReady = !isLoading && minDurationElapsed;
 
   useEffect(() => {
     const timer = setTimeout(
@@ -35,12 +37,20 @@ function AppContent() {
     return () => clearTimeout(timer);
   }, []);
 
-  const appReady = !isLoading && minDurationElapsed;
   useEffect(() => {
-    if (appReady) {
-      setSplashVisible(false);
-    }
-  }, [appReady]);
+    if (!appReady) return;
+
+    Animated.timing(splashOpacity, {
+      toValue: 0,
+      duration: 400, 
+      easing: Easing.out(Easing.quad),
+      useNativeDriver: true,
+    }).start(({ finished }) => {
+      if (finished) {
+        setSplashVisible(false);
+      }
+    });
+  }, [appReady, splashOpacity]);
 
   return (
     <View style={styles.root}>
@@ -51,9 +61,9 @@ function AppContent() {
       )}
 
       {splashVisible && (
-        <View style={styles.splashOverlay}>
+        <Animated.View style={[styles.splashOverlay, { opacity: splashOpacity }]}>
           <AppSplash />
-        </View>
+        </Animated.View>
       )}
     </View>
   );
